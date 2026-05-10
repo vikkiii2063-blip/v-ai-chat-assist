@@ -21,8 +21,6 @@ background:#87CEEB;
 overflow:hidden;
 }
 
-/* SIDEBAR */
-
 .sidebar{
 width:260px;
 background:#021633;
@@ -34,7 +32,7 @@ justify-content:space-between;
 }
 
 .logo{
-font-size:30px;
+font-size:32px;
 font-weight:bold;
 text-align:center;
 margin-bottom:20px;
@@ -59,11 +57,6 @@ background:#112544;
 padding:12px;
 border-radius:10px;
 margin-bottom:10px;
-cursor:pointer;
-}
-
-.bottom{
-margin-top:20px;
 }
 
 .logout{
@@ -77,8 +70,6 @@ cursor:pointer;
 margin-top:15px;
 }
 
-/* MAIN */
-
 .main{
 flex:1;
 display:flex;
@@ -88,7 +79,7 @@ position:relative;
 
 .v-bg{
 position:absolute;
-font-size:600px;
+font-size:500px;
 font-weight:bold;
 opacity:0.08;
 top:50%;
@@ -100,7 +91,7 @@ color:white;
 
 .topbar{
 padding:20px;
-font-size:40px;
+font-size:38px;
 font-weight:bold;
 z-index:2;
 }
@@ -132,7 +123,7 @@ color:black;
 }
 
 .review{
-margin-top:8px;
+margin-top:10px;
 font-size:22px;
 }
 
@@ -140,8 +131,6 @@ font-size:22px;
 cursor:pointer;
 margin-right:10px;
 }
-
-/* INPUT */
 
 .input-area{
 display:flex;
@@ -159,24 +148,22 @@ font-size:18px;
 outline:none;
 }
 
-.send-btn{
-width:60px;
-border:none;
-border-radius:50%;
-background:#0ea5e9;
-color:white;
-font-size:25px;
-cursor:pointer;
-}
-
+.send-btn,
 .voice-btn{
 width:60px;
 border:none;
 border-radius:50%;
-background:#021633;
-color:white;
 font-size:22px;
 cursor:pointer;
+color:white;
+}
+
+.send-btn{
+background:#0ea5e9;
+}
+
+.voice-btn{
+background:#021633;
 }
 
 </style>
@@ -187,7 +174,10 @@ cursor:pointer;
 <div class="sidebar">
 
 <div>
-<div class="logo">V AI</div>
+
+<div class="logo">
+V AI
+</div>
 
 <div class="new-chat" onclick="newChat()">
 + New Chat
@@ -195,14 +185,10 @@ cursor:pointer;
 
 <div class="history" id="history">
 </div>
+
 </div>
 
-<div class="bottom">
-
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-<div style="width:40px;height:40px;background:white;border-radius:50%;"></div>
-<div>Vikky</div>
-</div>
+<div>
 
 <input type="file">
 
@@ -216,17 +202,22 @@ Logout
 
 <div class="main">
 
-<div class="v-bg">V</div>
+<div class="v-bg">
+V
+</div>
 
 <div class="topbar">
 V AI Assistant
 </div>
 
-<div class="chat-box" id="chatBox"></div>
+<div class="chat-box" id="chatBox">
+</div>
 
 <div class="input-area">
 
-<button class="voice-btn">🎤</button>
+<button class="voice-btn">
+🎤
+</button>
 
 <input
 type="text"
@@ -245,18 +236,19 @@ onkeypress="handleEnter(event)"
 
 <script>
 
-let chats = [];
-
 function handleEnter(e){
+
 if(e.key === "Enter"){
 sendMessage();
 }
+
 }
 
 async function sendMessage(){
 
 const input = document.getElementById("input");
 const chatBox = document.getElementById("chatBox");
+const history = document.getElementById("history");
 
 const text = input.value.trim();
 
@@ -264,31 +256,27 @@ if(!text) return;
 
 input.value = "";
 
-const userDiv = document.createElement("div");
-userDiv.className = "message user";
-userDiv.innerText = text;
-
-chatBox.appendChild(userDiv);
-
-chatBox.scrollTop = chatBox.scrollHeight;
+chatBox.innerHTML += `
+<div class="message user">
+${text}
+</div>
+`;
 
 try{
 
-const response = await fetch("/chat",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
+const response = await fetch("/chat", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
 },
-body:JSON.stringify({
-message:text
+body: JSON.stringify({
+message: text
 })
 });
 
 const data = await response.json();
 
-const aiDiv = document.createElement("div");
-
-aiDiv.innerHTML = `
+chatBox.innerHTML += `
 <div class="message ai">
 ${data.reply}
 
@@ -300,29 +288,21 @@ ${data.reply}
 </div>
 `;
 
-chatBox.appendChild(aiDiv);
-
-const history = document.getElementById("history");
-
-const item = document.createElement("div");
-item.className = "chat-item";
-item.innerText = text;
-
-history.appendChild(item);
+history.innerHTML += `
+<div class="chat-item">
+${text}
+</div>
+`;
 
 chatBox.scrollTop = chatBox.scrollHeight;
 
 }catch(err){
 
-const errorDiv = document.createElement("div");
-
-errorDiv.innerHTML = `
+chatBox.innerHTML += `
 <div class="message ai">
-Error getting AI response
+AI Error
 </div>
 `;
-
-chatBox.appendChild(errorDiv);
 
 }
 
