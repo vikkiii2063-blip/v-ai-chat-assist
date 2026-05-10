@@ -1,6 +1,6 @@
 import express from "express";
 import axios from "axios";
-
+const API_KEY = "AIzaSyAKjOssd6V46pf_yv2nUMSS96NQQorBhFk";
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -10,7 +10,7 @@ try {
 const message = req.body.message;
 
 const response = await axios.post(
-`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${process.env.API_KEY}`,
+`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
 {
 contents: [
 {
