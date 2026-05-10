@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V AI</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+display:flex;
+height:100vh;
+background:#87CEEB;
+overflow:hidden;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:260px;
+background:#021633;
+color:white;
+padding:20px;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
+
+.logo{
+font-size:30px;
+font-weight:bold;
+text-align:center;
+margin-bottom:20px;
+}
+
+.new-chat{
+background:#0ea5e9;
+padding:15px;
+border-radius:12px;
+text-align:center;
+cursor:pointer;
+margin-bottom:20px;
+}
+
+.history{
+flex:1;
+overflow:auto;
+}
+
+.chat-item{
+background:#112544;
+padding:12px;
+border-radius:10px;
+margin-bottom:10px;
+cursor:pointer;
+}
+
+.bottom{
+margin-top:20px;
+}
+
+.logout{
+background:red;
+padding:14px;
+border:none;
+width:100%;
+color:white;
+border-radius:10px;
+cursor:pointer;
+margin-top:15px;
+}
+
+/* MAIN */
+
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+position:relative;
+}
+
+.v-bg{
+position:absolute;
+font-size:600px;
+font-weight:bold;
+opacity:0.08;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+pointer-events:none;
+color:white;
+}
+
+.topbar{
+padding:20px;
+font-size:40px;
+font-weight:bold;
+z-index:2;
+}
+
+.chat-box{
+flex:1;
+padding:20px;
+overflow:auto;
+z-index:2;
+}
+
+.message{
+max-width:70%;
+padding:15px;
+margin-bottom:20px;
+border-radius:20px;
+line-height:1.5;
+}
+
+.user{
+background:#0ea5e9;
+color:white;
+margin-left:auto;
+}
+
+.ai{
+background:white;
+color:black;
+}
+
+.review{
+margin-top:8px;
+font-size:22px;
+}
+
+.review span{
+cursor:pointer;
+margin-right:10px;
+}
+
+/* INPUT */
+
+.input-area{
+display:flex;
+padding:20px;
+gap:10px;
+z-index:2;
+}
+
+.input-area input{
+flex:1;
+padding:18px;
+border:none;
+border-radius:40px;
+font-size:18px;
+outline:none;
+}
+
+.send-btn{
+width:60px;
+border:none;
+border-radius:50%;
+background:#0ea5e9;
+color:white;
+font-size:25px;
+cursor:pointer;
+}
+
+.voice-btn{
+width:60px;
+border:none;
+border-radius:50%;
+background:#021633;
+color:white;
+font-size:22px;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<div>
+<div class="logo">V AI</div>
+
+<div class="new-chat" onclick="newChat()">
++ New Chat
+</div>
+
+<div class="history" id="history">
+</div>
+</div>
+
+<div class="bottom">
+
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+<div style="width:40px;height:40px;background:white;border-radius:50%;"></div>
+<div>Vikky</div>
+</div>
+
+<input type="file">
+
+<button class="logout">
+Logout
+</button>
+
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="v-bg">V</div>
+
+<div class="topbar">
+V AI Assistant
+</div>
+
+<div class="chat-box" id="chatBox"></div>
+
+<div class="input-area">
+
+<button class="voice-btn">🎤</button>
+
+<input
+type="text"
+id="input"
+placeholder="Ask anything..."
+onkeypress="handleEnter(event)"
+>
+
+<button class="send-btn" onclick="sendMessage()">
+➤
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let chats = [];
+
+function handleEnter(e){
+if(e.key === "Enter"){
+sendMessage();
+}
+}
+
+async function sendMessage(){
+
+const input = document.getElementById("input");
+const chatBox = document.getElementById("chatBox");
+
+const text = input.value.trim();
+
+if(!text) return;
+
+input.value = "";
+
+const userDiv = document.createElement("div");
+userDiv.className = "message user";
+userDiv.innerText = text;
+
+chatBox.appendChild(userDiv);
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+try{
+
+const response = await fetch("/chat",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+message:text
+})
+});
+
+const data = await response.json();
+
+const aiDiv = document.createElement("div");
+
+aiDiv.innerHTML = `
+<div class="message ai">
+${data.reply}
+
+<div class="review">
+<span>👍</span>
+<span>👎</span>
+</div>
+
+</div>
+`;
+
+chatBox.appendChild(aiDiv);
+
+const history = document.getElementById("history");
+
+const item = document.createElement("div");
+item.className = "chat-item";
+item.innerText = text;
+
+history.appendChild(item);
+
+chatBox.scrollTop = chatBox.scrollHeight;
+
+}catch(err){
+
+const errorDiv = document.createElement("div");
+
+errorDiv.innerHTML = `
+<div class="message ai">
+Error getting AI response
+</div>
+`;
+
+chatBox.appendChild(errorDiv);
+
+}
+
+}
+
+function newChat(){
+
+document.getElementById("chatBox").innerHTML = "";
+
+}
+
+</script>
+
+</body>
+</html>
