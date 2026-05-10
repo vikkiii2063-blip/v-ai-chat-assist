@@ -3,7 +3,7 @@ import axios from "axios";
 
 const router = express.Router();
 
-const API_KEY = "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";
+const API_KEY = "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";
 
 router.post("/", async (req, res) => {
 
@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "mistralai/mistral-7b-instruct",
+        model: "openai/gpt-3.5-turbo",
         messages: [
           {
             role: "user",
@@ -24,9 +24,7 @@ router.post("/", async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          "HTTP-Referer": "https://v-ai-chat-assist-2.onrender.com",
-          "X-Title": "V AI",
+          "Authorization": `Bearer ${API_KEY}`,
           "Content-Type": "application/json"
         }
       }
@@ -41,7 +39,9 @@ router.post("/", async (req, res) => {
 
   } catch (error) {
 
-    console.log(error);
+    console.log(
+      error.response?.data || error.message
+    );
 
     res.json({
       reply: "AI Error"
