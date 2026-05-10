@@ -1,45 +1,53 @@
 import express from "express";
 import axios from "axios";
-const API_KEY = "AIzaSyAKjOssd6V46pf_yv2nUMSS96NQQorBhFk";
+
 const router = express.Router();
+
+const API_KEY = "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";
 
 router.post("/", async (req, res) => {
 
-try {
+  try {
 
-const message = req.body.message;
+    const message = req.body.message;
 
-const response = await axios.post(
-`https://generativelanguage.googleapis.com/v1bete/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
-{
-contents: [
-{
-parts: [
-{
-text: message
-}
-]
-}
-]
-}
-);
+    const response = await axios.post(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        model: "mistralai/mistral-7b-instruct",
+        messages: [
+          {
+            role: "user",
+            content: message
+          }
+        ]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "HTTP-Referer": "https://v-ai-chat-assist-2.onrender.com",
+          "X-Title": "V AI",
+          "Content-Type": "application/json"
+        }
+      }
+    );
 
-const reply =
-response.data.candidates[0].content.parts[0].text;
+    const reply =
+      response.data.choices[0].message.content;
 
-res.json({
-reply
-});
+    res.json({
+      reply
+    });
 
-} catch (error) {
+  } catch (error) {
 
-console.log(error.response?.data || error.message);
+    console.log(error);
 
-res.json({
-reply: "AI Error"
-});
+    res.json({
+      reply: "AI Error"
+    });
 
-}
+  }
 
 });
 
