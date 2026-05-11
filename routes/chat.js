@@ -3,7 +3,7 @@ import axios from "axios";
 
 const router = express.Router();
 
-const API_KEY = "AIzaSyCjqHTe4Ry3s4-o7vfbmBiEdKtwYlkYud0";
+const API_KEY = "AIzaSyAK90Ynsr1BIVFQ_-dJKk4MrFS0zfyJ0XY";
 
 router.post("/", async (req, res) => {
 
