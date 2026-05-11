@@ -3,7 +3,7 @@ import axios from "axios";
 
 const router = express.Router();
 
-const API_KEY = "AIzaSyBvAO2RxFrl8zuLxDOEc_plnhiXvAqwYNs";
+const API_KEY = process.env.OPENROUTER_API_KEY;
 
 router.post("/", async (req, res) => {
 
@@ -12,26 +12,28 @@ router.post("/", async (req, res) => {
     const message = req.body.message;
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
+      "https://openrouter.ai/api/v1/chat/completions",
       {
-        contents: [
+        model: "meta-llama/llama-3.1-8b-instruct:free",
+        messages: [
           {
-            parts: [
-              {
-                text: message
-              }
-            ]
+            role: "user",
+            content: message
           }
         ]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json"
+        }
       }
     );
 
     const reply =
-      response.data.candidates[0].content.parts[0].text;
+      response.data.choices[0].message.content;
 
-    res.json({
-      reply
-    });
+    res.json({ reply });
 
   } catch (error) {
 
